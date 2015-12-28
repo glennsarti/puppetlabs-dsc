@@ -30,7 +30,7 @@ module PuppetX
                 fail "#{key} should only include numeric values: invalid value #{value}"
               end
 
-              value = value.is_a?(Array) ? value.map { |v| v.to_i } : value.to_i
+              value = munge_integer(value)
             end
           end
 
