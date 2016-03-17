@@ -87,8 +87,14 @@ module Dsc
 
     def absentable?
       if @absentable.nil?
-        @absentable ||= ensurable? &&
-          ensure_property.values.any? { |v| v.casecmp('absent') == 0 || v.casecmp('disable') == 0 }
+        if ensurable? && ! ensure_property.values
+          @absentable = false
+          $stderr.puts "WARNING: Processing #{@resource_mof_path}\nEnsurable property '#{ensure_property.name}' is missing a values specification - assuming it cannot be made absent\n"
+        else
+          @absentable = ensurable? &&
+            ensure_property.values &&
+            ensure_property.values.any? { |v| v.casecmp('absent') == 0 || v.casecmp('disable') == 0 }
+        end
       end
       @absentable
     end
@@ -106,7 +112,10 @@ module Dsc
 
     def ensure_value
       @ensure_value ||=
-        if ensure_property.values.any? { |v| v.casecmp('present') == 0 }
+        if ! ensure_property.values
+          $stderr.puts "WARNING: Processing #{@resource_mof_path}\nEnsurable property '#{ensure_property.name}' is missing a values specification - using default 'ensure'\n"
+          'present'
+        elsif ensure_property.values.any? { |v| v.casecmp('present') == 0 }
           'present'
         elsif ensure_property.values.any? { |v| v.casecmp('enable') == 0 }
           'enable'
