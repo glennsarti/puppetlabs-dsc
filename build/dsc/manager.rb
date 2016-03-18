@@ -211,6 +211,41 @@ module Dsc
       clean_folder([@dmtf_mof_folder])
     end
 
+    def format_embeddedtype_all_values(property)
+      # Parse the embedded type
+      type_map = {}
+      cim_classes_with_path
+        .select { |c| c[:klass].name == property.embeddedinstance_class_name }
+        .first[:klass]
+        .features
+        .map { |p| Dsc::Property.new(p) }
+        .each do |dsc_prop|
+
+        name = dsc_prop.name.downcase.gsub("'", "\\\\'")
+        type_map[name] = { :type => dsc_prop.type }
+        type_map[name][:values] = dsc_prop.values if dsc_prop.values
+        #  Example code if only required params
+        # if prop.qualifiers.any? { |q| q.name.casecmp('Required') == 0 }
+        #   required << "'" + name + "'"
+        # else
+        #   allowed << "'" + name + "'"
+        # end
+      end
+
+      # Generate the example text
+      examples = []
+      type_map.each { |name,props|
+        if props[:values]
+          example = "'#{props[:values].first}'"
+        else
+           example = format_type_value(@spec_test_values[props[:type]]).to_s
+        end
+        examples << "'#{name}' => #{example}"
+      }
+
+      "{ #{examples.join(',')} }" if type_map
+    end
+
     def format_type_value(type_value)
       case
       when type_value.class.name == 'Symbol'

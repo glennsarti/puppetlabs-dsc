@@ -30,9 +30,11 @@ describe Puppet::Type.type(:dsc_<%= resource.friendlyname.downcase %>) do
 <%      resource.properties.each do |property| -%>
 <%        if property.values -%>
       :dsc_<%= property.name.downcase %> => '<%= property.values.first %>',
+<%        elsif property.embeddedinstance? && !property.credential? && !property.keyvaluepair? -%>
+      :dsc_<%= property.name.downcase %> => <%= format_type_value(@spec_test_values[property.type]) || format_embeddedtype_all_values(property) %>,
 <%        else -%>
       :dsc_<%= property.name.downcase %> => <%= format_type_value(@spec_test_values[property.type]) || 'nil' %>,
-<%        end # if property.values -%>
+<%        end # if property.values else embeddedinstance -%>
 <%      end # each -%>
     )}.to_not raise_error
   end
@@ -116,8 +118,8 @@ describe Puppet::Type.type(:dsc_<%= resource.friendlyname.downcase %>) do
 <%      elsif property.embeddedinstance? -%>
 
   it 'should accept a hash for dsc_<%= property.name.downcase %>' do
-    dsc_<%= resource.friendlyname.downcase %>[:dsc_<%= property.name.downcase %>] = <%= format_type_value(@spec_test_values[property.type]) %>
-    expect(dsc_<%= resource.friendlyname.downcase %>[:dsc_<%= property.name.downcase %>]).to eq([<%= format_type_value(@spec_test_values[property.type]) %>])
+    dsc_<%= resource.friendlyname.downcase %>[:dsc_<%= property.name.downcase %>] = <%= format_type_value(@spec_test_values[property.type]) || format_embeddedtype_all_values(property) %>
+    expect(dsc_<%= resource.friendlyname.downcase %>[:dsc_<%= property.name.downcase %>]).to eq([<%= format_type_value(@spec_test_values[property.type]) || format_embeddedtype_all_values(property) -%>])
   end
 
   it 'should accept a an array of hashes for dsc_<%= property.name.downcase %>' do
