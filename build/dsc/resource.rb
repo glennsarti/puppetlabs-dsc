@@ -37,7 +37,7 @@ module Dsc
 
     def properties
       unless @properties
-        @properties ||= @resource_cim_class.features.collect{|cim_feature| Dsc::Property.new(cim_feature) }
+        @properties ||= @resource_cim_class.features.collect{|cim_feature| Dsc::Property.new(cim_feature,@resource_mof_path) }
       end
       @properties
     end
