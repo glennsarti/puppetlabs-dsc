@@ -108,7 +108,9 @@ eod
             puts "Using tag for #{dsc_resource_name} is #{tracked_version}. Switching to that tag."
             checkout_version = tracked_version
           end
-#require 'pry'; binding.pry
+
+          # If the checkout_version is not a standard PSGallery tag, a git fetch
+          # is required before a git checkout e.g. for commits or non-default branch names
           if !(checkout_version =~ /-PSGallery/)
             puts "#{checkout_version} is not a PSGallery tag. Fetching from git remote"
             sh "git fetch"
