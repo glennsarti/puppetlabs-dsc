@@ -108,13 +108,18 @@ eod
             puts "Using tag for #{dsc_resource_name} is #{tracked_version}. Switching to that tag."
             checkout_version = tracked_version
           end
+#require 'pry'; binding.pry
+          if !(checkout_version =~ /-PSGallery/)
+            puts "#{checkout_version} is not a PSGallery tag. Fetching from git remote"
+            sh "git fetch"
+          end
 
           sh "git checkout #{checkout_version}"
           resource_tags["#{dsc_resource_name}"] = checkout_version.encode("UTF-8")
         end
       end
 
-      File.open("#{dsc_resources_file}", 'w+') {|f| f.write resource_tags.to_yaml }
+      #** File.open("#{dsc_resources_file}", 'w+') {|f| f.write resource_tags.to_yaml }
 
       FileUtils.rm_rf(Dir["#{dsc_resources_path_tmp}/**/.git"])
 
