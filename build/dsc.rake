@@ -119,7 +119,7 @@ eod
         end
       end
 
-      #** File.open("#{dsc_resources_file}", 'w+') {|f| f.write resource_tags.to_yaml }
+      File.open("#{dsc_resources_file}", 'w+') {|f| f.write resource_tags.to_yaml }
 
       FileUtils.rm_rf(Dir["#{dsc_resources_path_tmp}/**/.git"])
 
