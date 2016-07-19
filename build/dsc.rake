@@ -109,8 +109,8 @@ eod
             checkout_version = tracked_version
           end
 
-          sh "git checkout #{tracked_version}"
-          resource_tags["#{dsc_resource_name}"] = tracked_version.encode("UTF-8")
+          sh "git checkout #{checkout_version}"
+          resource_tags["#{dsc_resource_name}"] = checkout_version.encode("UTF-8")
         end
       end
 
